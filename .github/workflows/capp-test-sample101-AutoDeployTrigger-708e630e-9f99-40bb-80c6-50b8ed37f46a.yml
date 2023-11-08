@@ -31,7 +31,7 @@ jobs:
           subscription-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
-        uses: azure/container-apps-deploy-action@4e84426311f5cea784d0ef99207293b7052f9cfc
+        uses: azure/container-apps-deploy-action@a881a4ee9e2ec88ee4c5aeb6b02a87e022e69293
         with:
           appSourcePath: ${{ github.workspace }} 
           registryUrl: snehaparacr.azurecr.io

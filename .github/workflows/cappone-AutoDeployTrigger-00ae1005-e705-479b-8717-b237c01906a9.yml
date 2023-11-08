@@ -1,0 +1,42 @@
+name: Trigger auto deployment for cappone
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/cappone-AutoDeployTrigger-00ae1005-e705-479b-8717-b237c01906a9.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.CAPPONE_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: snehaparacr.azurecr.io
+          registryUsername: ${{ secrets.CAPPONE_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.CAPPONE_REGISTRY_PASSWORD }}
+          containerAppName: cappone
+          resourceGroup: ca-snehapar-group
+          imageToBuild: snehaparacr.azurecr.io/cappone:${{ github.sha }}
+          
+
+     
+

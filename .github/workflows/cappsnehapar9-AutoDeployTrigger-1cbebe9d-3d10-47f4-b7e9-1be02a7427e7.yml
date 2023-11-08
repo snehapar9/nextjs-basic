@@ -11,11 +11,13 @@ on:
     - '.github/workflows/cappsnehapar9-AutoDeployTrigger-1cbebe9d-3d10-47f4-b7e9-1be02a7427e7.yml'
 
   # Allow manual trigger 
-  workflow_dispatch:
-      
+  workflow_dispatch:      
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
 
     steps:
       - name: Checkout to the branch
@@ -24,19 +26,20 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.CAPPSNEHAPAR9_AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.CAPPSNEHAPAR9_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CAPPSNEHAPAR9_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CAPPSNEHAPAR9_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }} 
-          registryUrl: 
+          registryUrl: snehaparacr.azurecr.io
           registryUsername: ${{ secrets.CAPPSNEHAPAR9_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.CAPPSNEHAPAR9_REGISTRY_PASSWORD }}
           containerAppName: cappsnehapar9
           resourceGroup: ca-snehapar-group
-          imageToBuild: default/buildname:${{ github.sha }}
+          imageToBuild: snehaparacr.azurecr.io/cappsnehapar9:${{ github.sha }}
           
 
-     
 

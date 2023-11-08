@@ -16,8 +16,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
 
     steps:
       - name: Checkout to the branch
@@ -26,9 +24,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          client-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.TEST_AZURE_CREDS }}
 
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@f8b23d9d8da03d4403533827f124d06a8fe8d958

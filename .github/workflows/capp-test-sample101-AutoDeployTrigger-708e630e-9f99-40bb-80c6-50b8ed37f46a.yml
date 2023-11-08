@@ -16,6 +16,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
 
     steps:
       - name: Checkout to the branch
@@ -24,10 +26,12 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.CAPPONE_AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CAPPTESTSAMPLE101_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
-        uses: azure/container-apps-deploy-action@v2
+        uses: azure/container-apps-deploy-action@8a70be2063d9b31aaeb82889e2bb211a4f6b16bb
         with:
           appSourcePath: ${{ github.workspace }} 
           registryUrl: snehaparacr.azurecr.io
@@ -36,6 +40,3 @@ jobs:
           containerAppName: capp-test-sample101
           resourceGroup: ca-snehapar-group
           imageToBuild: snehaparacr.azurecr.io/capp-test-sample101:${{ github.sha }}
-          
-
-

@@ -11,11 +11,13 @@ on:
     - '.github/workflows/random-AutoDeployTrigger-8a6c8f7c-2ee5-406b-ab8f-4a690194434d.yml'
 
   # Allow manual trigger 
-  workflow_dispatch:
-      
+  workflow_dispatch:      
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
 
     steps:
       - name: Checkout to the branch
@@ -24,7 +26,9 @@ jobs:
       - name: Azure Login
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.RANDOM_AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.RANDOM_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.RANDOM_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.RANDOM_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
         uses: azure/container-apps-deploy-action@v2
@@ -38,5 +42,4 @@ jobs:
           imageToBuild: snehaparacr.azurecr.io/random:${{ github.sha }}
           
 
-     
 

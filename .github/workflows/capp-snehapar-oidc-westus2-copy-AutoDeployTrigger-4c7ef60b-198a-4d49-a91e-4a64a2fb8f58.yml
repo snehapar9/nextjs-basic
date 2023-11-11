@@ -31,7 +31,7 @@ jobs:
           subscription-id: ${{ secrets.CAPPSNEHAPAROIDCWESTUS2COPY_AZURE_SUBSCRIPTION_ID }}
 
       - name: Build and push container image to registry
-        uses: azure/container-apps-deploy-action@v2
+        uses: azure/container-apps-deploy-action@a2b4294d5d00e0c449857c6aa20fac3cb4b3835b
         with:
           appSourcePath: ${{ github.workspace }} 
           registryUrl: 

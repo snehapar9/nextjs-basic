@@ -1,0 +1,45 @@
+name: Trigger auto deployment for capp-snehapar-oidc-westus2-copy
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/capp-snehapar-oidc-westus2-copy-AutoDeployTrigger-4c7ef60b-198a-4d49-a91e-4a64a2fb8f58.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.CAPPSNEHAPAROIDCWESTUS2COPY_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CAPPSNEHAPAROIDCWESTUS2COPY_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CAPPSNEHAPAROIDCWESTUS2COPY_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: 
+          registryUsername: ${{ secrets.CAPPSNEHAPAROIDCWESTUS2COPY_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.CAPPSNEHAPAROIDCWESTUS2COPY_REGISTRY_PASSWORD }}
+          containerAppName: capp-snehapar-oidc-westus2-copy
+          resourceGroup: ca-snehapar-oidc-westus-rg
+          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
+          
+
+

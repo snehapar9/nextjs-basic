@@ -1,0 +1,45 @@
+name: Trigger auto deployment for capp-sample-test-oidc-westus
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/capp-sample-test-oidc-westus-AutoDeployTrigger-a80705d6-7592-4e92-bff0-5e7e2657fa9f.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.CAPPSAMPLETESTOIDCWESTUS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CAPPSAMPLETESTOIDCWESTUS_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CAPPSAMPLETESTOIDCWESTUS_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: 
+          registryUsername: ${{ secrets.CAPPSAMPLETESTOIDCWESTUS_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.CAPPSAMPLETESTOIDCWESTUS_REGISTRY_PASSWORD }}
+          containerAppName: capp-sample-test-oidc-westus
+          resourceGroup: ca-snehapar-oidc-westus
+          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
+          
+
+
